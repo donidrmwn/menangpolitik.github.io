@@ -1,0 +1,47 @@
+:root {
+  --color-blue: #1e57a2;
+  --color-black: #121212;
+  --color-purple: #c084fc;
+  --color-purple-strong: #9333ea;
+  --color-abu: #555555;
+  --color-orange: #f97316;
+  --color-company: #000000
+}
+
+a {
+  text-decoration: none;
+  font-size: inherit;
+  color: inherit;
+}
+
+.mt-100 {
+  margin-top: 100px;
+}
+
+
+
+/* Style Terbaru */
+
+body{
+  color: #060606;
+  font-family: Poppins; 
+}
+
+.custom-button-login {
+  background-color: white;
+  color: #000000;
+  border: 1px solid white;
+  padding: 6px 25px;
+  cursor: pointer;
+  /* transition: background-color 0.3s ease-in-out; */
+}
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000; 
+}
+
+

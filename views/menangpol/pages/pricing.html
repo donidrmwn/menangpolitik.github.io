@@ -1,0 +1,413 @@
+<style>
+  .card-pricing {
+    margin: auto;
+    background-color: transparent;
+    border: none;
+    width: 60%;
+    justify-content: center;
+  }
+  @media (max-width: 768px) {
+    .card-pricing {
+      width: 100%;
+    }
+  }
+</style>
+
+<section
+  id="harga"
+  class="scroll"
+  style="
+    display: flex;
+    text-align: center;
+    background-color: #f0f0f0;
+    justify-content: center;
+  "
+>
+  <div class="container">
+    <h2
+      class="title-hero text-center title-underline"
+      data-aos="fade-down"
+      data-aos-duration="1000"
+      style="padding-top: 100px; justify-content: center;"
+    >
+      Harga Paket
+    </h2>
+
+    <div
+        class="justify-content-center row mt-5"
+        data-aos="fade-right"
+        data-aos-duration="1000"
+      >
+        <div class="floating-select d-flex flex-column custom-dropdown">
+          <span style="text-align: left; padding-left: 10px;">Wilayah</span>
+          <select
+            name=""
+            placeholder="Kategori Pemilu"
+            class="form-control form-control-sm mx-2"
+            style="width: 250px; height: 40px; border-radius: 5px;"
+            id="selWilayah"
+          >
+            <option value="" selected disabled hidden>Pilih wilayah</option>
+          </select>
+          <p id="selWilayahError" style="color: red; font-size: 13px;"></p>
+        </div>
+        <div class="floating-select d-flex flex-column">
+          <span style="text-align: left; padding-left: 10px;"
+            >Jenis Pemilu</span
+          >
+          <select
+            name=""
+            placeholder="Kategori Pemilu"
+            class="form-control form-control-sm mx-2"
+            style="width: 250px; height: 40px; border-radius: 5px;"
+            id="selPil"
+          >
+            <option value="" disabled selected hidden
+              >Pilih jenis pemilu</option
+            >
+            <option value="1">Pemilu Legislatif</option>
+            <option value="2" disabled>Pemilihan Kepala Daerah</option>
+          </select>
+          <p id="selPillError" style="color: red; font-size: 13px;"></p>
+        </div>
+        
+      </div>
+
+    <div
+      data-aos="fade-down"
+      data-aos-duration="1000"
+      class="row mx-auto mt-2 mb-5"
+      id="listTab"
+      style="padding-top: 20px;"
+    ></div>
+  </div>
+</section>
+
+<section
+  class="scroll"
+  style="
+    display: flex;
+    background-color: rgb(252, 251, 251);
+    padding: 70px 0px;
+  "
+>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-9" data-aos="fade-right" data-aos-duration="900">
+        <h2 class="mt-4">
+          Langkah Pertama Menuju Kemenangan Dimulai dari Sini.
+        </h2>
+        <p style="font-size: 17px; line-height: 30px; margin-top: 20px;">
+          Dengan panduan ahli dan alat yang kuat, Anda akan memulai perjalanan
+          menuju kemenangan yang gemilang. Bergabunglah sekarang dan wujudkan
+          visi politik Anda dengan sukses!
+        </p>
+        <button
+          class="btn btn-started py-2 mt-4"
+          onclick="window.location.href='/login'"
+        >
+          <i class="fas fa-door-open"></i>Gabung Sekarang
+        </button>
+      </div>
+      <div
+        class="col-md-3 image-success"
+        data-aos="fade-left"
+        data-aos-duration="900"
+      >
+        <img
+          src="https://politikpintar.id/api/assets/uploads/1/2023-08/1692975311.png"
+          class="img-fluid"
+          alt="success"
+          width="450"
+        />
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  var selPilkada = "1";
+
+  var quantity = "1";
+
+  document.addEventListener("DOMContentLoaded", function () {
+    AOS.init();
+    $("#selWilayah").change(function () {
+      selWilayah = $("#selWilayah").val();
+      setActiveBlock(selWilayah);
+    });
+    getAllProduct();
+  });
+
+  function getAllProduct() {
+    var url =
+      API_URL + `/v1/package?order=id&sort=asc&pilkada_type=${selPilkada}`;
+    $.get(url, function (res) {
+      updateSelWilayah(res.data);
+      buildTab(res.data);
+      setActiveBlock(res.data[0].id);
+    });
+  }
+
+  function setActiveBlock(id) {
+    $(".block-package").removeClass("d-block").addClass("d-none");
+    $("#block-" + id).addClass("d-block");
+    var activeElement = $("#block-" + id)
+      .find("> *")
+      .find("> *")
+      .find(".active");
+
+    showTab(activeElement.attr("id"));
+  }
+
+  function updateSelWilayah(arr) {
+    $.each(arr, function (index, obj) {
+      $("#selWilayah").append(
+        `<option    value="${obj.id}">${obj.name}</option>`
+      );
+    });
+  }
+
+  function formatRupiah(number) {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+    }).format(number);
+  }
+
+  function buildTab(arr) {
+    var el = "";
+    $.each(arr, function (index, obj) {
+      var pilegv = "";
+      var productv = "";
+      var tabsV = "";
+      $.each(obj.pileg, function (i, pileg) {
+        var pilegvClass = "";
+        if (i == 0) {
+          pilegvClass = "active";
+        }
+        var ids = index + "-" + obj.id + "-" + pileg.id;
+        pilegv += `
+        <li class="nav-item " onclick="showTab(${ids})">
+          <a
+            class="fs-12 px-3 nav-link ${pilegvClass}"
+            id="${ids}"
+            data-toggle="pill"
+            href="#pills-${ids}"
+            role="tab"
+            aria-controls="pills-${ids}"
+            aria-selected="true"
+            >${pileg.name}</a
+          >
+        </li>
+        `;
+
+        var productv = "";
+
+        var populerColor = "";
+        $.each(pileg.products, function (i, product) {
+
+
+          var price_product = product.price;
+          if (
+            product.discount_price < price_product &&
+            product.discount_price > 1
+          ) {
+            price_product = product.discount_price;
+          }
+          var productvClass = "";
+          var populer = "";
+          var bgColor = "";
+          var bgPopuler = "";
+          var colorPopuler = "color:#121212;";
+          var sizeCard = "";
+          var margin = "";
+          var colorProduct = ";";
+          var colorValue = "";
+          var marginPrice = "";
+          var colorPrice = "";
+          var effect = "fade-right";
+          var classButtonPrice = "btn__pricing";
+
+          if (i == 1) {
+            effect = "fade-up";
+            populer = "POPULER";
+            marginPrice = "margin-top:25px;";
+            colorProduct = "color: #fff";
+            var classButtonPrice = "btn__pricing__hover";
+            bgColor = "background-color:#404040;";
+            bgPopuler =
+              "background-color:#F3E8FF;padding: 12px 24px;color:#404040;font-weight:800";
+            colorPopuler = "color:white;font-size:15px;";
+            sizeCard = " height:570px";
+            margin = "margin-top:-20px";
+            colorPrice = "color:#fff";
+          }
+          if (i == 2) {
+            effect = "fade-left";
+          }
+
+          productv += `
+              <div class="col-lg-4 mt-4">
+                <div class="pricing-one__single " style="
+                border-radius: 12px;${bgColor};${sizeCard}; ${margin}
+                
+            ">
+                <div class="pricing-one__inner px-3" style="border-radius: 15px;${bgColor}">
+                  <div class="col d-flex justify-content-between align-items-center  p-2">
+                  <h4 style="font-weight:600; ${colorProduct};">${
+            product.product_name
+          }</h4>
+                  <span class="text-uppercase" style="margin-top:-10px;border-radius: 12px; ${bgPopuler}">${populer}</span>
+                </div>
+                  <ul class="list-unstyled pricing-one__list" style="text-align: left;color:#121212;  ">
+                    ${product.product_features
+                      ?.map(
+                        (feature) =>
+                          `<li  style="${colorPopuler} font-size:14px; justify-content:space-between; display:flex "><div><i class="fa fa-check"></i> ${
+                            feature.name
+                          }</div> ${new Intl.NumberFormat().format(
+                            feature.value
+                          )}</li>`
+                      )
+                      .join("")}
+                  </ul>
+                  <div>
+                    <h5 style="text-align:left;${colorPrice};${marginPrice}; font-weight:600">${formatRupiah(
+            price_product
+          )}</h5>
+                    <a  href="#pricing_section"  onclick="addToCart('${
+                      product.id
+                    }', '${
+            product.product_name
+          }', '${price_product}', '${selPilkada}','${pileg.name}','${
+            obj.name
+          }', '${quantity}')"><span class="${classButtonPrice} py-3 ">Beli</span></a>
+                  </div>
+                  
+                </div>
+              </div>
+            </div>
+          `;
+        });
+        var tabVClass = "";
+        if (i == 0) {
+          tabVClass = "show active";
+        }
+        tabsV += `
+        <div class="tab-content" id="pills-content-${ids}" style="
+            margin-top: 60px;">
+          <div class="tab-pane fade ${tabVClass}" data-i="${i}"  id="pills-${ids}" role="tabpanel" aria-labelledby="pills-${ids}-tab">
+            <div class="row">
+              ${productv}
+            </div>
+          </div>
+          
+        </div>
+        `;
+      });
+
+      el += `
+      <div class="col-md-12 mx-auto my-2 block-package" id="block-${obj.id}">
+      <ul
+        class="nav nav-pills px-4 mb-3 d-flex justify-content-around px-5  py-2 rounded-md col-md-7 mx-auto"
+        id="pills-tab"
+        role="tablist"
+        style="background: #bebab7;border-radius:5px
+      ">
+        ${pilegv}
+      </ul>
+        ${tabsV}
+    </div>
+
+    `;
+    });
+    $("#listTab").html(el);
+  }
+
+  function showTab(id) {
+    $(".tab-pane").removeClass("show").removeClass("active");
+    $("#pills-" + id)
+      .addClass("show")
+      .addClass("active");
+  }
+
+  $(function () {
+    var u = cekLogedIn();
+    if (u.state === undefined || u.state.value.user === undefined) {
+      setLogout();
+    }
+    if (u.state.value.user !== undefined) {
+      cekMe(u);
+      setLogin();
+    }
+  });
+
+  function setLogin() {
+    var u = cekLogedIn();
+    var user = u.state.value.user;
+    $(".btnSignIn").removeClass("d-none").addClass("d-block");
+    $(".btnSignUp").removeClass("d-block").addClass("d-none");
+  }
+
+  function validateForm() {
+    var selWilayah = document.getElementById("selWilayah");
+    var selPil = document.getElementById("selPil");
+
+    var selWilayahError = document.getElementById("selWilayahError");
+    var selPilError = document.getElementById("selPillError");
+
+    selWilayahError.textContent = "";
+    selPilError.textContent = "";
+
+    if (selWilayah.value === "") {
+      selWilayah.style.border = "1px solid red";
+      selWilayahError.textContent = "Harap pilih wilayah.";
+      return false;
+    } else {
+      selWilayah.style.border = "none";
+    }
+
+    if (selPil.value === "") {
+      selPil.style.border = "1px solid red";
+      selPilError.textContent = "Harap pilih kategori pemilu.";
+      return false;
+    } else {
+      selPil.style.border = "none";
+    }
+
+    return true;
+  }
+
+  function addToCart(id, name, price, tipe, pileg, region) {
+  var isValid = validateForm();
+
+  if (isValid) {
+    var userLoggedIn = cekLogedIn();
+
+    var product = {
+      id,
+      name,
+      price,
+      tipe,
+      pileg,
+      region,
+      quantity: 1,
+      produk: "utama",
+    };
+
+    var cartData = JSON.parse(localStorage.getItem("__cart")) || [];
+
+    cartData.push(product);
+
+    localStorage.setItem("__cart", JSON.stringify(cartData));
+
+    if (userLoggedIn) {
+      location.href = "/addon";
+    } else {
+      location.href = "/addon";
+    }
+  }
+}
+
+</script>
