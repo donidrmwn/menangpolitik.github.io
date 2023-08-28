@@ -20,7 +20,7 @@ import (
 var BasicData fiber.Map
 
 func main() {
-	config.Redis()
+	
 	env := config.LoadConfig().Environtment
 
 	engine := html.NewFileSystem(http.Dir("./views"), ".html")
